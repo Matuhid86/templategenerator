@@ -31,13 +31,16 @@ public class DataSourceConfig {
 	@Value("${com.api.database.mysql.driverClassName}")
 	private String driverClassNameMySQL;
 
+	@Value("${com.api.database.sqlite.driverClassName}")
+	private String driverClassNameSQLite;
+
 	@Bean
 	public DataSource getDataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setUrl(this.getUrl());
 		dataSource.setDriverClassName(this.getDriverClassName());
 
-		if (this.username != null && this.password != null) {
+		if (!this.username.isEmpty() && !this.password.isEmpty()) {
 			dataSource.setUsername(this.username);
 			dataSource.setPassword(this.password);
 		}
@@ -48,6 +51,8 @@ public class DataSourceConfig {
 		switch (this.database) {
 		case MYSQL:
 			return this.driverClassNameMySQL;
+		case SQLITE:
+			return this.driverClassNameSQLite;
 		}
 		return null;
 	}
@@ -55,7 +60,9 @@ public class DataSourceConfig {
 	private String getUrl() {
 		switch (this.database) {
 		case MYSQL:
-			return "jdbc:mysql://" + this.host + ":" + this.port;
+			return "jdbc:mysql://" + this.host + ((!this.port.isEmpty()) ? ":" + this.port : "");
+		case SQLITE:
+			return "jdbc:sqlite:" + this.host + ((!this.port.isEmpty()) ? ":" + this.port : "");
 		}
 		return null;
 	}

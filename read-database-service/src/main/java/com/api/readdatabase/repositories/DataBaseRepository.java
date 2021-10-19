@@ -24,6 +24,9 @@ public class DataBaseRepository extends BaseRepository<DataBase> {
 	@Value("${com.api.database.mysql.queryDatabases}")
 	private String queryDataBasesMySQL;
 
+	@Value("${com.api.database.sqlite.queryDatabases}")
+	private String queryDataBasesSQLITE;
+
 	@Autowired
 	private TableRepository tableRepository;
 
@@ -40,7 +43,12 @@ public class DataBaseRepository extends BaseRepository<DataBase> {
 		DataBase entity = new DataBase();
 
 		try {
-			entity.setName(resultSet.getString(1));
+			switch (this.database) {
+			case MYSQL:
+				entity.setName(resultSet.getString(1));
+			case SQLITE:
+				entity.setName(resultSet.getString(2));
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -71,6 +79,8 @@ public class DataBaseRepository extends BaseRepository<DataBase> {
 		switch (this.database) {
 		case MYSQL:
 			query = this.queryDataBasesMySQL;
+		case SQLITE:
+			query = this.queryDataBasesSQLITE;
 		}
 
 		if (query != null)

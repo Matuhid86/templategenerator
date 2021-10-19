@@ -25,6 +25,9 @@ public class TableRepository extends BaseRepository<Table> {
 	@Value("${com.api.database.mysql.queryTables}")
 	private String queryTablesMySQL;
 
+	@Value("${com.api.database.sqlite.queryTables}")
+	private String queryTablesSQLITE;
+
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -62,6 +65,8 @@ public class TableRepository extends BaseRepository<Table> {
 		switch (this.database) {
 		case MYSQL:
 			query = this.queryTablesMySQL;
+		case SQLITE:
+			query = this.queryTablesSQLITE;
 		}
 
 		if (query != null) {

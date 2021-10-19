@@ -1,5 +1,5 @@
 package com.api.readdatabase.enums;
 
 public enum DataBase {
-	MYSQL, POSTGRESS
+	MYSQL, POSTGRESS, SQLITE
 }

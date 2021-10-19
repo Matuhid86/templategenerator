@@ -23,6 +23,9 @@ public class ColumnRepository extends BaseRepository<Column> {
 	@Value("${com.api.database.mysql.queryColumns}")
 	private String queryColumnsMySQL;
 
+	@Value("${com.api.database.sqlite.queryColumns}")
+	private String queryColumnsSQLITE;
+
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
@@ -57,6 +60,8 @@ public class ColumnRepository extends BaseRepository<Column> {
 		switch (this.database) {
 		case MYSQL:
 			query = this.queryColumnsMySQL;
+		case SQLITE:
+			query = this.queryColumnsSQLITE;
 		}
 
 		if (query != null) {
@@ -89,25 +94,45 @@ public class ColumnRepository extends BaseRepository<Column> {
 		Column entity = new Column();
 
 		try {
-			entity.setName(resultSet.getString(1));
+			switch (this.database) {
+			case MYSQL:
+				entity.setName(resultSet.getString(1));
+			case SQLITE:
+				entity.setName(resultSet.getString(2));
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
 		try {
-			entity.setType(resultSet.getString(2));
+			switch (this.database) {
+			case MYSQL:
+				entity.setType(resultSet.getString(2));
+			case SQLITE:
+				entity.setType(resultSet.getString(3));
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
 		try {
-			entity.setIsNullable(!resultSet.getString(3).equals("NO"));
+			switch (this.database) {
+			case MYSQL:
+				entity.setIsNullable(!resultSet.getString(3).equals("NO"));
+			case SQLITE:
+				entity.setIsNullable(!resultSet.getString(4).equals("1"));
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
 		try {
-			entity.setKey(resultSet.getString(4));
+			switch (this.database) {
+			case MYSQL:
+				entity.setKey(resultSet.getString(4));
+			case SQLITE:
+				entity.setKey(resultSet.getString(6).equals("1") ? "PRI" : "");
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -119,7 +144,10 @@ public class ColumnRepository extends BaseRepository<Column> {
 		}
 
 		try {
-			entity.setExtra(resultSet.getString(6));
+			switch (this.database) {
+			case MYSQL:
+				entity.setExtra(resultSet.getString(6));
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
