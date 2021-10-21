@@ -13,7 +13,7 @@ public abstract class BaseRepository<E> {
 
 	protected abstract JdbcTemplate getJDBCTemplate();
 
-	protected abstract E getEntity(ResultSet resultSet);
+	protected abstract E getEntity(ResultSet resultSet, HashMap<String, FilterBase> initializers);
 
 	public abstract E save(E entity);
 
@@ -28,7 +28,7 @@ public abstract class BaseRepository<E> {
 	public abstract Integer count(FilterBase filter);
 
 	public List<E> findAll() {
-		return this.find(null);
+		return this.find(new FilterBase());
 	}
 
 	protected Integer save(String table, HashMap<String, Object> data) {
@@ -101,7 +101,7 @@ public abstract class BaseRepository<E> {
 		return this.getJDBCTemplate().update(query, parameters);
 	}
 
-	protected List<E> find(String table, HashMap<String, Object> filters) {
+	protected List<E> find(String table, HashMap<String, Object> filters, HashMap<String, FilterBase> initializers) {
 		String where = "";
 		List<Object> parameters = new ArrayList<Object>();
 
@@ -119,7 +119,7 @@ public abstract class BaseRepository<E> {
 
 		String query = "SELECT * FROM " + table + where;
 
-		return this.getJDBCTemplate().query(query, (rs, rowNum) -> this.getEntity(rs), parameters);
+		return this.getJDBCTemplate().query(query, (rs, rowNum) -> this.getEntity(rs, initializers), parameters);
 	}
 
 	protected Integer count(String table, HashMap<String, Object> filters) {

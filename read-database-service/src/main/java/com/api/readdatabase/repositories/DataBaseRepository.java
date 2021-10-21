@@ -2,6 +2,7 @@ package com.api.readdatabase.repositories;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,21 +40,24 @@ public class DataBaseRepository extends BaseRepository<DataBase> {
 	}
 
 	@Override
-	protected DataBase getEntity(ResultSet resultSet) {
+	protected DataBase getEntity(ResultSet resultSet, HashMap<String, FilterBase> initializers) {
 		DataBase entity = new DataBase();
 
 		try {
 			switch (this.database) {
 			case MYSQL:
 				entity.setName(resultSet.getString(1));
+				break;
 			case SQLITE:
 				entity.setName(resultSet.getString(2));
+				break;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 
-		entity.setTables(this.getTables(entity.getName()));
+		if (initializers.containsKey("tables"))
+			entity.setTables(this.getTables(entity.getName(), initializers.get("tables")));
 
 		return entity;
 	}
@@ -79,12 +83,14 @@ public class DataBaseRepository extends BaseRepository<DataBase> {
 		switch (this.database) {
 		case MYSQL:
 			query = this.queryDataBasesMySQL;
+			break;
 		case SQLITE:
 			query = this.queryDataBasesSQLITE;
+			break;
 		}
 
 		if (query != null)
-			return this.getJDBCTemplate().query(query, (rs, rowNum) -> this.getEntity(rs));
+			return this.getJDBCTemplate().query(query, (rs, rowNum) -> this.getEntity(rs, filter.getInitializers()));
 		return new ArrayList<DataBase>();
 	}
 
@@ -98,8 +104,12 @@ public class DataBaseRepository extends BaseRepository<DataBase> {
 		return this.find(filter).size();
 	}
 
-	private List<Table> getTables(String dataBaseName) {
+	private List<Table> getTables(String dataBaseName, FilterBase filterBase) {
 		FilterTable filter = new FilterTable();
+
+		if (filterBase != null && filterBase instanceof FilterTable)
+			filter = (FilterTable) filterBase;
+
 		filter.setDataBase(dataBaseName);
 
 		return this.tableRepository.find(filter);

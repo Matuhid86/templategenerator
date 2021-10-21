@@ -2,6 +2,7 @@ package com.api.readdatabase.repositories;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +11,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.api.readdatabase.entities.Column;
+import com.api.readdatabase.entities.Index;
 import com.api.readdatabase.entities.Table;
 import com.api.readdatabase.filters.FilterBase;
 import com.api.readdatabase.filters.FilterColumn;
+import com.api.readdatabase.filters.FilterIndex;
 import com.api.readdatabase.filters.FilterTable;
 
 @Repository
@@ -34,13 +37,16 @@ public class TableRepository extends BaseRepository<Table> {
 	@Autowired
 	private ColumnRepository columnRepository;
 
+	@Autowired
+	private IndexRepository indexRepository;
+
 	@Override
 	protected JdbcTemplate getJDBCTemplate() {
 		return this.jdbcTemplate;
 	}
 
 	@Override
-	protected Table getEntity(ResultSet resultSet) {
+	protected Table getEntity(ResultSet resultSet, HashMap<String, FilterBase> initializers) {
 		return null;
 	}
 
@@ -65,8 +71,10 @@ public class TableRepository extends BaseRepository<Table> {
 		switch (this.database) {
 		case MYSQL:
 			query = this.queryTablesMySQL;
+			break;
 		case SQLITE:
 			query = this.queryTablesSQLITE;
+			break;
 		}
 
 		if (query != null) {
@@ -93,14 +101,6 @@ public class TableRepository extends BaseRepository<Table> {
 		return this.find(filter).size();
 	}
 
-	private List<Column> getColumns(String tableName, String dataBaseName) {
-		FilterColumn filter = new FilterColumn();
-		filter.setDataBase(dataBaseName);
-		filter.setTable(tableName);
-
-		return this.columnRepository.find(filter);
-	}
-
 	private Table getEntity(ResultSet resultSet, FilterBase filterBase) {
 		Table entity = new Table();
 
@@ -116,8 +116,38 @@ public class TableRepository extends BaseRepository<Table> {
 			entity.setDataBaseName(filter.getDataBase());
 		}
 
-		entity.setColumns(this.getColumns(entity.getName(), entity.getDataBaseName()));
+		if (filterBase.getInitializers().containsKey("columns"))
+			entity.setColumns(this.getColumns(entity.getName(), entity.getDataBaseName(),
+					filterBase.getInitializers().get("columns")));
+
+		if (filterBase.getInitializers().containsKey("indexs"))
+			entity.setIndexs(this.getIndexs(entity.getName(), entity.getDataBaseName(),
+					filterBase.getInitializers().get("indexs")));
 
 		return entity;
+	}
+
+	private List<Column> getColumns(String tableName, String dataBaseName, FilterBase filterBase) {
+		FilterColumn filter = new FilterColumn();
+
+		if (filterBase != null && filterBase instanceof FilterColumn)
+			filter = (FilterColumn) filterBase;
+
+		filter.setDataBase(dataBaseName);
+		filter.setTable(tableName);
+
+		return this.columnRepository.find(filter);
+	}
+
+	private List<Index> getIndexs(String tableName, String dataBaseName, FilterBase filterBase) {
+		FilterIndex filter = new FilterIndex();
+
+		if (filterBase != null && filterBase instanceof FilterIndex)
+			filter = (FilterIndex) filterBase;
+
+		filter.setDataBase(dataBaseName);
+		filter.setTable(tableName);
+
+		return this.indexRepository.find(filter);
 	}
 }

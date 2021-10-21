@@ -10,10 +10,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class Table extends BaseEntity {
+public class Index extends BaseEntity {
 
 	private String dataBaseName;
+	private String tableName;
 	private String name;
-	private List<Column> columns = new ArrayList<Column>();
-	private List<Index> indexs = new ArrayList<Index>();
+	private Boolean isPrimaryKey;
+	private Boolean isUnique;
+	private List<FieldIndex> fields = new ArrayList<FieldIndex>();
 }

@@ -2,6 +2,7 @@ package com.api.readdatabase.repositories;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class ColumnRepository extends BaseRepository<Column> {
 	}
 
 	@Override
-	protected Column getEntity(ResultSet resultSet) {
+	protected Column getEntity(ResultSet resultSet, HashMap<String, FilterBase> initializers) {
 		return null;
 	}
 
@@ -60,8 +61,10 @@ public class ColumnRepository extends BaseRepository<Column> {
 		switch (this.database) {
 		case MYSQL:
 			query = this.queryColumnsMySQL;
+			break;
 		case SQLITE:
 			query = this.queryColumnsSQLITE;
+			break;
 		}
 
 		if (query != null) {
@@ -97,8 +100,10 @@ public class ColumnRepository extends BaseRepository<Column> {
 			switch (this.database) {
 			case MYSQL:
 				entity.setName(resultSet.getString(1));
+				break;
 			case SQLITE:
 				entity.setName(resultSet.getString(2));
+				break;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -108,8 +113,10 @@ public class ColumnRepository extends BaseRepository<Column> {
 			switch (this.database) {
 			case MYSQL:
 				entity.setType(resultSet.getString(2));
+				break;
 			case SQLITE:
 				entity.setType(resultSet.getString(3));
+				break;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -119,8 +126,10 @@ public class ColumnRepository extends BaseRepository<Column> {
 			switch (this.database) {
 			case MYSQL:
 				entity.setIsNullable(!resultSet.getString(3).equals("NO"));
+				break;
 			case SQLITE:
 				entity.setIsNullable(!resultSet.getString(4).equals("1"));
+				break;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -130,8 +139,10 @@ public class ColumnRepository extends BaseRepository<Column> {
 			switch (this.database) {
 			case MYSQL:
 				entity.setKey(resultSet.getString(4));
+				break;
 			case SQLITE:
 				entity.setKey(resultSet.getString(6).equals("1") ? "PRI" : "");
+				break;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
@@ -147,6 +158,7 @@ public class ColumnRepository extends BaseRepository<Column> {
 			switch (this.database) {
 			case MYSQL:
 				entity.setExtra(resultSet.getString(6));
+				break;
 			}
 		} catch (Exception ex) {
 			ex.printStackTrace();

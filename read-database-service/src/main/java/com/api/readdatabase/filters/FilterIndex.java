@@ -1,7 +1,5 @@
 package com.api.readdatabase.filters;
 
-import java.util.HashMap;
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,8 +7,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class FilterBase {
+public class FilterIndex extends FilterBase {
 
-	private HashMap<String, FilterBase> initializers = new HashMap<String, FilterBase>();
-
+	private String name;
+	private String dataBase;
+	private String table;
 }

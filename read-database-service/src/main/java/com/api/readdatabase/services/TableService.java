@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.api.readdatabase.dtos.TableDto;
 import com.api.readdatabase.entities.Table;
+import com.api.readdatabase.filters.FilterColumn;
+import com.api.readdatabase.filters.FilterIndex;
 import com.api.readdatabase.filters.FilterTable;
 import com.api.readdatabase.mappers.BaseMapper;
 import com.api.readdatabase.mappers.TableMapper;
@@ -32,6 +34,8 @@ public class TableService extends BaseService<TableDto, Table> {
 
 	public List<TableDto> getByDataBase(String databaseName) throws Exception {
 		FilterTable filter = new FilterTable();
+		filter.getInitializers().put("columns", new FilterColumn());
+		filter.getInitializers().put("indexs", new FilterIndex());
 		filter.setDataBase(databaseName);
 
 		return this.find(filter);

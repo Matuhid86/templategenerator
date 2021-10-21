@@ -10,11 +10,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class TableDto extends BaseDto {
+public class IndexDto extends BaseDto {
 
 	private String dataBaseName;
+	private String tableName;
 	private String name;
-	private List<ColumnDto> columns = new ArrayList<ColumnDto>();
-	private List<IndexDto> indexs = new ArrayList<IndexDto>();
-
+	private Boolean isPrimaryKey;
+	private Boolean isUnique;
+	private List<FieldIndexDto> fields = new ArrayList<FieldIndexDto>();
 }

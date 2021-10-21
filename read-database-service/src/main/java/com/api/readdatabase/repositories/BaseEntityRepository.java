@@ -40,13 +40,13 @@ public abstract class BaseEntityRepository<E> extends BaseRepository<E> {
 
 	@Override
 	public List<E> find(FilterBase filter) {
-		return this.find(this.getTable(), this.getFilters(filter));
+		return this.find(this.getTable(), this.getFilters(filter), filter.getInitializers());
 	}
 
 	@Override
 	public E findById(Object id) {
 		HashMap<String, Object> filters = this.getFiltersForId(id);
-		List<E> entities = this.find(this.getTable(), filters);
+		List<E> entities = this.find(this.getTable(), filters, null);
 
 		if (entities != null && entities.size() == 1)
 			return entities.get(0);

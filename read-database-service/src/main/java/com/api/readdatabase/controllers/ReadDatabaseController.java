@@ -33,6 +33,11 @@ public class ReadDatabaseController implements BaseController {
 		return ResponseEntity.status(HttpStatus.OK).body(this.dataBaseService.findAll());
 	}
 
+	@GetMapping(value = "/databases/initializers")
+	public ResponseEntity<List<DataBaseDto>> getDatabasesInitializers() throws Exception {
+		return ResponseEntity.status(HttpStatus.OK).body(this.dataBaseService.getDataBasesInitializer());
+	}
+
 	@GetMapping(value = "/tables/{database}")
 	public ResponseEntity<List<TableDto>> getTablesByDataBase(@PathVariable String database) throws Exception {
 		return ResponseEntity.status(HttpStatus.OK).body(this.tableService.getByDataBase(database));
